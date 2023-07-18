@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.terraform.d/plugin-cache
-          key: terraform-plugins-${{ runner.os }}-v1
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }
 
       - name: Validate Terraform code
         run: terraform validate
