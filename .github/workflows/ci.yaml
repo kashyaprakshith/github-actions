@@ -38,8 +38,8 @@ jobs:
 
       - name: Validate Terraform code
         run: terraform validate
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Plan Terraform changes
         run: terraform plan -input=false -lock=false
-        continue-on-error: true
+        continue-on-error: false
