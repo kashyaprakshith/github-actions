@@ -39,7 +39,8 @@ jobs:
       - name: Validate Terraform code
         run: terraform validate
         continue-on-error: true
-      - name:  version
+
+      - name: Show Terraform version
         run: terraform version
 
       - name: Plan Terraform changes
