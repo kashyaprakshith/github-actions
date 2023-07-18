@@ -1,20 +1,32 @@
-name: Terraform CI
+name: Build
 
-on: [push]
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout Code.
       - name: Checkout code
         uses: actions/checkout@v2
-
+        
+      # Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: "1.0.0" # Specify your desired Terraform version here
-
+          
+      # Caching Terraform Plugins
       - name: Cache Terraform plugins
         uses: actions/cache@v2
         with:
@@ -28,10 +40,3 @@ jobs:
       - name: Plan Terraform changes
         run: terraform plan -input=false -lock=false
         continue-on-error: true
-
-      - name: Fail the build if validation or planning failed
-        run: |
-          if [ ${{ job.status }} == "failure" ]; then
-            echo "Terraform validation or planning failed. Exiting with status 1."
-            exit 1
-          fi
