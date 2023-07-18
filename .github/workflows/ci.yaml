@@ -33,7 +33,8 @@ jobs:
           path: ~/.terraform.d/plugin-cache
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
           restore-keys: |
-            ${{ runner.os }}-terraform-}
+            ${{ runner.os }}-terraform-
+            ${{ runner.os }}-
 
       - name: Validate Terraform code
         run: terraform validate
