@@ -35,11 +35,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-terraform-
             ${{ runner.os }}-
-
+            
+      # Initialize Terraform
+      - name: Initialize Terraform
+        run: terraform init      
+            
+      # Validation of terraform code
       - name: Validate Terraform code
         run: terraform validate
         continue-on-error: false
-
+        
+      # Planning Terraform changes
       - name: Plan Terraform changes
-        run: terraform plan -input=false -lock=false
-        continue-on-error: false
+        run: terraform plan -input=fal
