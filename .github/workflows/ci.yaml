@@ -1,4 +1,4 @@
-name: Build
+name: build
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
     steps:
       # Checkout Code.
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
       # Setup Terraform
       - name: Setup Terraform
@@ -39,9 +39,6 @@ jobs:
       - name: Validate Terraform code
         run: terraform validate
         continue-on-error: true
-
-      - name: Show Terraform version
-        run: terraform version
 
       - name: Plan Terraform changes
         run: terraform plan -input=false -lock=false
