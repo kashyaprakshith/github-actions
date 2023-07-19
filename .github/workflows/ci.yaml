@@ -57,7 +57,7 @@ jobs:
         with:
           path: ~/.tfsec
           key: ${{ runner.os }}-tfsec-${{ hashFiles('**/.tfsec-version') }}
-        continue-on-error: true
+    
       - run: tfsec --version || true # Install if not already cached
 
       - name: Cache checkov dependencies
@@ -65,7 +65,6 @@ jobs:
         with:
           path: ~/.checkov
           key: ${{ runner.os }}-checkov-${{ hashFiles('**/.checkov-version') }}
-        continue-on-error: true
       - run: checkov --version || true # Install if not already cached
 
       # Install tfsec and checkov
@@ -79,17 +78,14 @@ jobs:
           if ! command -v checkov &> /dev/null; then
             curl -sL https://raw.githubusercontent.com/bridgecrewio/checkov/master/install.sh | bash -
           fi
-        continue-on-error: true
 
       # Execute tfsec scan
       - name: Run tfsec scan
         run: tfsec || true
-        continue-on-error: true
 
       # Execute checkov scan
       - name: Run checkov scan
         run: checkov --sarif || true
-        continue-on-error: true
 
       # Upload SARIF to GHAS
       - name: Upload SARIF to GHAS
@@ -101,5 +97,4 @@ jobs:
           else
             echo "No SARIF file found. Skipping upload."
           fi
-        continue-on-error: true
 
