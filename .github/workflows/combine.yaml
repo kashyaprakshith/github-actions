@@ -1,0 +1,67 @@
+name: build
+
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
+
+jobs:
+  security-scans:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@master
+      - name: tfsec-security scan
+        uses: aquasecurity/tfsec-action@v1.0.0
+      - name: SARIF conversion
+        uses: tfsec/tfsec-sarif-action@master
+        with:
+          sarif_file: tfsec.sarif         
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: tfsec.sarif
+          
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout Code.
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      # Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: "1.0.9" # Specify your desired Terraform version here
+          
+      # Caching Terraform Plugins
+      - name: Cache Terraform plugins
+        uses: actions/cache@v2
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+            ${{ runner.os }}-      
+            
+      # Initialize Terraform
+      - name: Initialize Terraform
+        run: terraform init 
+
+      # Validation of terraform code
+      - name: Validate Terraform code
+        run: terraform validate
+        continue-on-error: false
+        
+      # Planning Terraform changes
+      - name: Plan Terraform changes
+        run: terraform plan -input=false -lock=false
