@@ -23,8 +23,12 @@ jobs:
 
       - name: Rename SARIF file
         run: mv results.sarif "checkov-${{ github.repository }}.sarif"
+        continue-on-error: true
+
 
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: checkov-${{ github.repository }}.sarif
+        continue-on-error: true
+
