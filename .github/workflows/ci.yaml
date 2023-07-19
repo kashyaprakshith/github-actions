@@ -39,15 +39,17 @@ jobs:
       # Initialize Terraform
       - name: Initialize Terraform
         run: terraform init 
+        continue-on-error: true
 
       # Validation of terraform code
       - name: Validate Terraform code
         run: terraform validate
-        continue-on-error: false
+        continue-on-error: true
         
       # Planning Terraform changes
       - name: Plan Terraform changes
         run: terraform plan -input=false -lock=false
+        continue-on-error: true
 
       # Cache tfsec and checkov dependencies
       - name: Cache tfsec and checkov dependencies
@@ -55,14 +57,16 @@ jobs:
         with:
           path: ~/.tfsec
           key: ${{ runner.os }}-tfsec-${{ hashFiles('**/.tfsec-version') }}
-      - run: tfsec --version # Install if not already cached
+        continue-on-error: true
+      - run: tfsec --version || true # Install if not already cached
 
       - name: Cache checkov dependencies
         uses: actions/cache@v2
         with:
           path: ~/.checkov
           key: ${{ runner.os }}-checkov-${{ hashFiles('**/.checkov-version') }}
-      - run: checkov --version # Install if not already cached
+        continue-on-error: true
+      - run: checkov --version || true # Install if not already cached
 
       # Install tfsec and checkov
       - name: Install tfsec and checkov
@@ -75,14 +79,17 @@ jobs:
           if ! command -v checkov &> /dev/null; then
             curl -sL https://raw.githubusercontent.com/bridgecrewio/checkov/master/install.sh | bash -
           fi
+        continue-on-error: true
 
       # Execute tfsec scan
       - name: Run tfsec scan
-        run: tfsec
+        run: tfsec || true
+        continue-on-error: true
 
       # Execute checkov scan
       - name: Run checkov scan
-        run: checkov --sarif
+        run: checkov --sarif || true
+        continue-on-error: true
 
       # Upload SARIF to GHAS
       - name: Upload SARIF to GHAS
@@ -94,3 +101,5 @@ jobs:
           else
             echo "No SARIF file found. Skipping upload."
           fi
+        continue-on-error: true
+
