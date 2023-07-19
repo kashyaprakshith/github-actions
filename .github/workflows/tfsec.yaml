@@ -11,15 +11,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clone repo
-        uses: actions/checkout@v2
-      
-      - name: Install tfsec
+      - name: Cache tfsec binary
+        id: cache-tfsec
+        uses: actions/cache@v2
+        with:
+          path: /usr/local/bin/tfsec
+          key: ${{ runner.os }}-tfsec-${{ hashFiles('tfsec') }}
+      - name: Setup tfsec
         run: |
-          curl -Lso tfsec https://github.com/tfsec/tfsec/releases/latest/download/tfsec-linux-amd64
-          chmod +x tfsec
-          sudo mv tfsec /usr/local/bin/
-          tfsec -v
+          if ! command -v tfsec &> /dev/null; then
+            curl -Lso tfsec https://github.com/tfsec/tfsec/releases/latest/download/tfsec-linux-amd64
+            chmod +x tfsec
+            sudo mv tfsec /usr/local/bin/
+          fi
+      - name: Display tfsec version
+        run: tfsec -v
 
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
