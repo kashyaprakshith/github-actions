@@ -12,9 +12,9 @@ jobs:
     steps:
       - name: Clone repo
         uses: actions/checkout@master
-      - name: tfsec
+      - name: tfsec-security scan
         uses: aquasecurity/tfsec-action@v1.0.0
-      - name: tfsec
+      - name: SARIF conversion
         uses: tfsec/tfsec-sarif-action@master
         with:
           sarif_file: tfsec.sarif         
