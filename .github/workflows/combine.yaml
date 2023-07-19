@@ -11,31 +11,46 @@ on:
       - synchronize
   workflow_dispatch:
 
+## tfsec scan
 jobs:
   tfsec-scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone repo
+      # code checkout.
+      - name: Code Checkout
         uses: actions/checkout@master
+        
+        # run tfsec scan.
       - name: tfsec-security scan
         uses: aquasecurity/tfsec-action@v1.0.0
+        
+        # convert tfsec output to SARIF format.
       - name: SARIF conversion
         uses: tfsec/tfsec-sarif-action@master
         with:
           sarif_file: tfsec.sarif
+          
+      # upload results to GHAS 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: tfsec.sarif
-
+          
+  ## checkov scan
   checkov-scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      # Code Checkout
+      - name: Code Checkout
+        uses: actions/checkout@v3
+        
+      # Setup Python 3.8
       - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
+          
+      # Run checkov scan
       - name: Test with Checkov
         id: checkov
         uses: bridgecrewio/checkov-action@master
@@ -43,16 +58,20 @@ jobs:
           directory: ./
           framework: terraform
         continue-on-error: true
+        
+      # Rename SARIF file
       - name: Rename SARIF file
         run: mv results.sarif checkov-results.sarif
         continue-on-error: true
+        
+     # Upload results to GHAS
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: checkov-results.sarif
         continue-on-error: true   
           
-  build:
+  build-terraform:
     runs-on: ubuntu-latest
     steps:
       # Checkout Code.
