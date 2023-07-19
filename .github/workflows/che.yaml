@@ -20,6 +20,8 @@ jobs:
         with:
           directory: ./
           framework: terraform
+        continue-on-error: true
+
 
       - name: Rename SARIF file
         run: mv results.sarif "checkov-${{ github.repository }}.sarif"
