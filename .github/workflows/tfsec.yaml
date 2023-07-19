@@ -4,29 +4,22 @@ on:
     branches:
       - main
   pull_request:
-
 jobs:
   tfsec:
-    name: tfsec
+    name: tfsec sarif report
     runs-on: ubuntu-latest
 
     steps:
       - name: Clone repo
-        uses: actions/checkout@v2
-      
-      - name: Install tfsec
-        run: |
-          curl -Lso tfsec https://github.com/tfsec/tfsec/releases/latest/download/tfsec-linux-amd64
-          chmod +x tfsec
-          sudo mv tfsec /usr/local/bin/
-          tfsec -v
+        uses: actions/checkout@master
 
-      - name: Run tfsec scan and convert to SARIF
-        run: |
-          tfsec
-          tfsec --sarif > tfsec_results.sarif
-
-      - name: Upload SARIF to GHAS
-        uses: aquasecurity/tfsec-sarif-action@main
+      - name: tfsec
+        uses: tfsec/tfsec-sarif-action@main
         with:
-          sarif_file: tfsec_results.sarif
+          sarif_file: tfsec.sarif         
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: tfsec.sarif    
