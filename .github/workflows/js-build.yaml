@@ -87,4 +87,6 @@ jobs:
       #     make release
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2       
+        uses: github/codeql-action/analyze@v2    
+      - name: run codeQL analysis
+        run: cat javascript.sarif  
