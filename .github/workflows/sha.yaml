@@ -27,11 +27,6 @@ jobs:
         id: git-sha7
         run: |
           echo "::set-output name=value::${GITHUB_SHA::7}"
-
-  use-git-sha7-output:
-    needs: [git-sha7]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Use the output value from git-sha7
+      - name: Use the output value in the same job
         run: |
-          echo "The short git SHA is ${{ needs.git-sha7.outputs.SHA7 }}" # Reference the output value of the "git-sha7" job
+          echo "The short git SHA is ${{ steps.git-sha7.outputs.SHA7 }}" # Reference the output value "SHA7" within the same job
