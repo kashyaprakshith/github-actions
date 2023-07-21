@@ -1,0 +1,29 @@
+name: "Trivy"
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+  workflow_run:
+    workflows: [ "Build" ]
+    branches:
+      - main
+      - releases
+      - release/*
+      - hotfix/*
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+    types:
+      - completed
+
+jobs:
+  git-sha7:
+    name: Determine short git sha
+    runs-on: ubuntu-latest
+    outputs:
+      value: ${{ steps.git-sha7.outputs.SHA7 }}
+    steps:
+      - name: Resolve git 7-chars sha
+        id: git-sha7
+        run: |
+          echo "SHA7=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
