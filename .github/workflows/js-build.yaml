@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:      
       - name: Build Image
-        run: docker build -t 'trivy:${{ github.sha }}' -f ./Dockerfile .
+        run: docker build . --file Dockerfile --tag 'trivy:${{ github.sha }}'
         # Location might not be fixed - TODO: turn to env var
 
       - name: Show Images
