@@ -94,7 +94,7 @@ jobs:
     steps:     
       - run: pwd
       - name: Build Image
-        run: docker build . --file Dockerfile --tag 'trivy:${{ github.sha }}'
+        run: docker build . --file Dockerfile --tag trivy:'${{ github.sha }}'
         # Location might not be fixed - TODO: turn to env var
 
       - name: Show Images
