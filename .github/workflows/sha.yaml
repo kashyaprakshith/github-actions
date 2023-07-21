@@ -27,3 +27,5 @@ jobs:
         id: git-sha7
         run: |
           echo "::set-output name=value::${GITHUB_SHA::7}"
+      - name: echo
+        run: echo "The short git SHA is ${{ needs.git-sha7.outputs.value }}" 
