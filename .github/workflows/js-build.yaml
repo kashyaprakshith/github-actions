@@ -90,6 +90,7 @@ jobs:
         uses: github/codeql-action/analyze@v2  
 
   Trivy-Scans: 
+    runs-on: ubuntu-latest
     steps:      
       - name: Build Image
         run: docker build -t '${{ github.repository }}:${{ github.sha }}' -f ./Dockerfile .
