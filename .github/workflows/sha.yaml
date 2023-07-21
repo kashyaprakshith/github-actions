@@ -21,11 +21,17 @@ jobs:
     name: Determine short git sha
     runs-on: ubuntu-latest
     outputs:
-      value: ${{ steps.git-sha7.outputs.SHA7 }}
+      SHA7: ${{ steps.git-sha7.outputs.value }} # Define the output variable with the name "SHA7"
     steps:
       - name: Resolve git 7-chars sha
         id: git-sha7
         run: |
           echo "::set-output name=value::${GITHUB_SHA::7}"
-      - name: echo
-        run: echo "The short git SHA is $value" 
+
+  use-git-sha7-output:
+    needs: [git-sha7]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use the output value from git-sha7
+        run: |
+          echo "The short git SHA is ${{ needs.git-sha7.outputs.SHA7 }}" # Reference the output value of the "git-sha7" job
