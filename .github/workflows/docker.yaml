@@ -11,6 +11,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name
+      run: docker build /home/runner/work/github-actions/github-actions. --file Dockerfile --tag my-image-name
     - name: show images
       run: docker image ls
