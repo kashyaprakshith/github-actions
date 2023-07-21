@@ -13,4 +13,4 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-image-name
     - name: show images
-      run: docker ps -a
+      run: docker image ls
