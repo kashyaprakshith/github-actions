@@ -91,7 +91,8 @@ jobs:
 
   Trivy-Scans: 
     runs-on: ubuntu-latest
-    steps:      
+    steps:     
+      - run: pwd
       - name: Build Image
         run: docker build . --file Dockerfile --tag 'trivy:${{ github.sha }}'
         # Location might not be fixed - TODO: turn to env var
