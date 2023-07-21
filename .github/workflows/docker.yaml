@@ -11,6 +11,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag sample:
+      run: docker build -t sample -f ./Dockerfile
     - name: show images
       run: docker ps -a
