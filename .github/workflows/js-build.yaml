@@ -97,7 +97,7 @@ jobs:
         
         
       - name: Build Image
-        run: docker build -t trivy:'${{ github.sha }}' -v /var/run/docker.sock:/var/run/docker.sock .
+        run: docker build -t trivy:'${{ github.sha }}' .
  
         # Location might not be fixed - TODO: turn to env var
 
