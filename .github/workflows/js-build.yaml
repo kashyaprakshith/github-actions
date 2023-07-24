@@ -92,7 +92,10 @@ jobs:
   Trivy-Scans: 
     runs-on: ubuntu-latest
     steps:     
-      - run: pwd
+      - name: Check out code
+        uses: actions/checkout@v3
+        
+        
       - name: Build Image
         run: docker build . --file Dockerfile --tag trivy:'${{ github.sha }}'
         # Location might not be fixed - TODO: turn to env var
