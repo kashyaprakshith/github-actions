@@ -9,21 +9,20 @@ on:
       - reopened
       - synchronize
   workflow_dispatch:
-permissions: read-all
+permissions: read-all    
 jobs:
   JS-build:
     runs-on: ubuntu-latest
-
     steps:
       # Check Out Code.
       - uses: actions/checkout@v3
-
+      
       # Use Node Version 18.x
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-
+      
       # Caching npm modules.
       - name: Cache node modules
         id: cache-npm
@@ -43,13 +42,13 @@ jobs:
         run: npm install
 
       - name: npm clean install
-        run: npm ci
+        run: npm ci 
 
       - name: Test
         run: npm test
-
+        
       - name: Build
-        run: npm run build --if-present
+        run: npm run build --if-present 
 
   CodeQL-Build:
     # CodeQL runs on ubuntu-latest, windows-latest, and macos-latest
@@ -70,50 +69,48 @@ jobs:
           languages: javascript
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v2  
 
-  Trivy-Scans:
+  Trivy-Scans: 
     runs-on: ubuntu-latest
-    steps:
+    steps:     
       - name: Check out code
         uses: actions/checkout@v3
-
+        
       - name: Build Image
         run: docker build -t trivy:'${{ github.sha }}' .
-
+ 
       - name: Show Images
         run: docker images ls
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ github.repository }}:${{ github.sha }}'
+          image-ref: '${{ github.repository }}:${{ github.sha }}' 
           exit-code: "1"
           hide-progress: false
           format: "sarif"
           output: 'trivy-results-${{ github.sha }}.sarif'
           severity: "CRITICAL,HIGH"
-
+          
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
-          sarif_file: 'trivy-results-${{ github.sha }}.sarif'
+          sarif_file: 'trivy-results-${{ github.sha }}.sarif'  
 
   njsscan:
     runs-on: ubuntu-latest
     name: njsscan code scanning
     steps:
-      - name: Checkout the code
-        uses: actions/checkout@v2
-      - name: nodejsscan scan
-        id: njsscan
-        uses: ajinabraham/njsscan-action@master
-        with:
-          args: '. --sarif --output results.sarif || true'
-      - name: ls
-        run: ls -al    
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: results.sarif
+    - name: Checkout the code
+      uses: actions/checkout@v2
+    - name: nodejsscan scan
+      id: njsscan
+      uses: ajinabraham/njsscan-action@master
+      with:
+        args: '. --sarif --output results.sarif || true'
+    - name: Upload njsscan report
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: results.sarif
