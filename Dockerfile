@@ -1,6 +1,9 @@
 # Stage 1: Development Environment
 FROM node:14 as development
 
+# Mount the Docker socket
+VOLUME /var/run/docker.sock
+
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
