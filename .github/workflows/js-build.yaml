@@ -9,23 +9,23 @@ on:
       - reopened
       - synchronize
   workflow_dispatch:
-
-permissions:
-  security-events: write
-
+permissions: 
+  actions: read
+  contents: read
+  security-events: write   
 jobs:
   JS-build:
     runs-on: ubuntu-latest
     steps:
       # Check Out Code.
       - uses: actions/checkout@v3
-
+      
       # Use Node Version 18.x
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-
+      
       # Caching npm modules.
       - name: Cache node modules
         id: cache-npm
@@ -41,53 +41,44 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: compiled
-        run: npm install
-
       - name: npm clean install
         run: npm ci 
 
       - name: Test
         run: npm test
-
+        
       - name: Build
-        run: npm run build --if-present
+        run: npm run build --if-present 
 
-  Trivy-Scans:
-    permissions:
-      security-events: write
-
+  Trivy-Scans: 
     runs-on: ubuntu-latest
-    steps:
+    steps:     
       - name: Check out code
         uses: actions/checkout@v3
-
+        
       - name: Build Image
         run: docker build -t 'trivy:${{ github.sha }}' .
-
+ 
       - name: Show Images
         run: docker images ls
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'trivy:${{ github.sha }}'
+          image-ref: 'trivy:${{ github.sha }}' 
           exit-code: "1"
           hide-progress: false
           format: "sarif"
           output: 'trivy-results-${{ github.sha }}.sarif'
           severity: "CRITICAL,HIGH"
-
+          
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
-          sarif_file: 'trivy-results-${{ github.sha }}.sarif'
+          sarif_file: 'trivy-results-${{ github.sha }}.sarif'  
 
   njsscan:
-    permissions:
-      security-events: write
-
     runs-on: ubuntu-latest
     name: njsscan code scanning
     steps:
@@ -99,18 +90,16 @@ jobs:
         with:
           args: '. --sarif --output results.sarif || true'
       - name: rename
-        run: mv results.sarif njss.sarif
+        run: mv results.sarif 'njss-${{ github.sha }}.sarif'    
       - name: Upload njsscan report
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: njss.sarif
 
-  CodeQL-Build:
+  CodeQL-Scan:
     # CodeQL runs on ubuntu-latest, windows-latest, and macos-latest
     runs-on: ubuntu-latest
     permissions:
-      # required for all workflows
-      security-events: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -122,4 +111,4 @@ jobs:
           languages: javascript
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v2          
