@@ -53,11 +53,9 @@ jobs:
   CodeQL-Build:
     # CodeQL runs on ubuntu-latest, windows-latest, and macos-latest
     runs-on: ubuntu-latest
-
     permissions:
       # required for all workflows
       security-events: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -78,7 +76,7 @@ jobs:
         uses: actions/checkout@v3
         
       - name: Build Image
-        run: docker build -t trivy:'${{ github.sha }}' .
+        run: docker build -t 'trivy:${{ github.sha }}' .
  
       - name: Show Images
         run: docker images ls
@@ -86,7 +84,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ github.repository }}:${{ github.sha }}' 
+          image-ref: 'trivy:${{ github.sha }}' 
           exit-code: "1"
           hide-progress: false
           format: "sarif"
@@ -103,16 +101,16 @@ jobs:
     runs-on: ubuntu-latest
     name: njsscan code scanning
     steps:
-    - name: Checkout the code
-      uses: actions/checkout@v2
-    - name: nodejsscan scan
-      id: njsscan
-      uses: ajinabraham/njsscan-action@master
-      with:
-        args: '. --sarif --output results.sarif || true'
-    - name: rename
-      run: mv results.sarif njss.sarif    
-    - name: Upload njsscan report
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: njss.sarif
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: nodejsscan scan
+        id: njsscan
+        uses: ajinabraham/njsscan-action@master
+        with:
+          args: '. --sarif --output results.sarif || true'
+      - name: rename
+        run: mv results.sarif njss.sarif    
+      - name: Upload njsscan report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: njss.sarif
