@@ -116,3 +116,11 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
+
+      - name: Rename the Sarif file.
+        run: mv javascript.sarif 'CodeQL-{{ github.sha }}'  
+
+      - name: upload the CodeQL scans to github security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'codeQL-${{ github.sha }}.sarif' 
