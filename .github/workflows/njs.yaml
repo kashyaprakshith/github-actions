@@ -15,10 +15,8 @@ jobs:
       id: njsscan
       uses: ajinabraham/njsscan-action@master
       with:
-        args: '. --sarif --output results.sarif || true'
-    - name: rename
-      run: mv results.sarif njs.sarif
+        args: '. --sarif --output njsscan.sarif || true'
     - name: Upload njsscan report
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: results.sarif
+        sarif_file: njsscan.sarif
