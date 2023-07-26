@@ -1,15 +1,16 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
+const express = require('express')
+const app = express()
+const port = 3000
 
-try {
-  // `who-to-greet` input defined in action metadata file
-  const nameToGreet = core.getInput('who-to-greet');
-  console.log(`Hello ${nameToGreet}!`);
-  const time = (new Date()).toTimeString();
-  core.setOutput("time", time);
-  // Get the JSON webhook payload for the event that triggered the workflow
-  const payload = JSON.stringify(github.context.payload, undefined, 2)
-  console.log(`The event payload: ${payload}`);
-} catch (error) {
-  core.setFailed(error.message);
-}
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+app.get("/hello", (req, res) => {
+  const name = req.query.name;
+  res.send(`<h1>Hello, ${name}</h1>`);
+});
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
