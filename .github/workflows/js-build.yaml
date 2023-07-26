@@ -116,8 +116,9 @@ jobs:
           languages: javascript
       
       # Autobuild 
+      ## Note: This step can be optional, in case the JavaScript code does not require a compilation step
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v2    
+        uses: github/codeql-action/autobuild@v2
 
       # perform codeQL Scanning
       - name: Perform CodeQL Analysis           # "github/codeql-action/analyze@v2" automatically uploads the scan results
