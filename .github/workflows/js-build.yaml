@@ -119,6 +119,8 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: javascript
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2 
 
       # perform codeQL Scanning
       - name: Perform CodeQL Analysis           # "github/codeql-action/analyze@v2" automatically uploads the scan results
