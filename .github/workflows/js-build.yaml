@@ -53,7 +53,6 @@ jobs:
         run: npm run build --if-present
 
   Trivy-Scans:
-    needs:  JS-build
     runs-on: ubuntu-latest
     steps:
       # Checkout Code
@@ -83,7 +82,6 @@ jobs:
           sarif_file: 'trivy-results-${{ github.sha }}.sarif'
 
   njsscan:
-    needs:  JS-build
     runs-on: ubuntu-latest
     name: njsscan code scanning
     steps:
@@ -107,7 +105,6 @@ jobs:
           sarif_file: 'njss-results-${{ github.sha }}.sarif'
 
   CodeQL-Scan:
-    needs:  JS-build
     runs-on: ubuntu-latest
     steps:
       # Code Checkout
@@ -119,8 +116,10 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: javascript
+      
+      # Autobuild 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v2 
+        uses: github/codeql-action/autobuild@v2    
 
       # perform codeQL Scanning
       - name: Perform CodeQL Analysis           # "github/codeql-action/analyze@v2" automatically uploads the scan results
