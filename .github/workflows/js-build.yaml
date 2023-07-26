@@ -124,4 +124,3 @@ jobs:
         uses: github/codeql-action/analyze@v2   # to GHAS with file name "javascript.sarif"
 
  
- 
