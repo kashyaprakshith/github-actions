@@ -19,23 +19,20 @@ jobs:
   JS-build:
     runs-on: ubuntu-latest
     steps:
-      # Check Out Code.
-      - uses: actions/checkout@v3
+      - name: Check Out Code
+        uses: actions/checkout@v3
 
-      # Use Node Version 18.x
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
 
-      # Caching npm modules.
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
@@ -44,26 +41,45 @@ jobs:
             ${{ runner.os }}-
 
       - name: npm clean install
-        run: npm ci 
+        run: npm ci
 
       - name: Test
-        run: npm test 
+        run: npm test
 
       - name: Build
         run: npm run build --if-present
 
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+      - name: nodejsscan scan
+        id: njsscan
+        uses: ajinabraham/njsscan-action@master
+        with:
+          args: '. --sarif --output njss-results.sarif || true'
+
+      - name: Upload njsscan report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'njss-results.sarif'
+
   Trivy-Scans:
     runs-on: ubuntu-latest
     steps:
-      # Checkout Code
       - name: Check out code
         uses: actions/checkout@v3
 
-      # Build Image
       - name: Build Image
         run: docker build -t '${{ github.repository }}:${{ github.sha }}' .
 
-      # Run Trivy Scanner on built image
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -71,56 +87,11 @@ jobs:
           exit-code: "1"
           hide-progress: false
           format: "sarif"
-          output: 'trivy-results-${{ github.sha }}.sarif'
+          output: 'trivy-results.sarif'
           severity: "CRITICAL,HIGH"
-      
-      # Upload scan results to github security tab
+
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
-          sarif_file: 'trivy-results-${{ github.sha }}.sarif'
-
-  njsscan:
-    runs-on: ubuntu-latest
-    name: njsscan code scanning
-    steps:
-      # Checkout Code
-      - name: Checkout the code
-        uses: actions/checkout@v3
-
-      # Perform nodejsscan   
-      - name: nodejsscan scan
-        id: njsscan
-        uses: ajinabraham/njsscan-action@master
-        with:
-          args: '. --sarif --output njss-results-${{ github.sha }}.sarif || true'
-          
-      # Upload scan results to github security tab
-      - name: Upload njsscan report
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'njss-results-${{ github.sha }}.sarif'
-
-  CodeQL-Scan:
-    runs-on: ubuntu-latest
-    steps:
-      # Code Checkout
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # Initializes the CodeQL tools for scanning.
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: javascript
-      
-      # Autobuild 
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2    
-
-      # perform codeQL Scanning
-      - name: Perform CodeQL Analysis           # "github/codeql-action/analyze@v2" automatically uploads the scan results
-        uses: github/codeql-action/analyze@v2   # to GHAS with file name "javascript.sarif"
-
- 
+          sarif_file: 'trivy-results.sarif'
