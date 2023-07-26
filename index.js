@@ -11,6 +11,12 @@ app.get("/hello", (req, res) => {
   res.send(`<h1>Hello, ${name}</h1>`);
 });
 
+app.get('/customerOnboarding', (req, res) => {
+  const name = req.query.name;
+  const uppercaseName = eval('"' + name + '"' + '.toUpperCase()');
+  res.send('Hi there, ' + uppercaseName);
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
