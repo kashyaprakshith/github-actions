@@ -43,6 +43,12 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
+      # Initialize CodeQL
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript      
+
       - name: npm clean install
         run: npm ci
 
@@ -51,23 +57,6 @@ jobs:
 
       - name: Build
         run: npm run build --if-present
-
-  scan-code:
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      # Check Out Code
-      - name: Check Out Code
-        uses: actions/checkout@v3
-
-      # Initialize CodeQL
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: javascript
 
       # Autobuild
       ## Note: This step can be optional, in case the JavaScript code does not require a compilation step
@@ -92,7 +81,7 @@ jobs:
         with:
           sarif_file: 'njss-results.sarif'
 
-  Trivy-Scans:
+  Container-scan:
     runs-on: ubuntu-latest
     steps:
       # Checkout Code
