@@ -19,14 +19,17 @@ jobs:
   JS-build:
     runs-on: ubuntu-latest
     steps:
+      # Check Out Code
       - name: Check Out Code
         uses: actions/checkout@v3
 
+      # Use Node Version 18.x
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
 
+      # Caching npm modules.
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@v3
@@ -49,23 +52,41 @@ jobs:
       - name: Build
         run: npm run build --if-present
 
+  scan-code:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      # Check Out Code
+      - name: Check Out Code
+        uses: actions/checkout@v3
+
+      # Initialize CodeQL
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
           languages: javascript
 
+      # Autobuild
+      ## Note: This step can be optional, in case the JavaScript code does not require a compilation step
       - name: Autobuild
         uses: github/codeql-action/autobuild@v2
 
+      # Perform CodeQL Analysis
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
+      ## njss Scan
+      # Perform nodejsscan
       - name: nodejsscan scan
         id: njsscan
         uses: ajinabraham/njsscan-action@master
         with:
           args: '. --sarif --output njss-results.sarif || true'
 
+      # Upload scan results to github security tab
       - name: Upload njsscan report
         uses: github/codeql-action/upload-sarif@v2
         with:
@@ -74,12 +95,15 @@ jobs:
   Trivy-Scans:
     runs-on: ubuntu-latest
     steps:
+      # Checkout Code
       - name: Check out code
         uses: actions/checkout@v3
 
+      # Build Image
       - name: Build Image
         run: docker build -t '${{ github.repository }}:${{ github.sha }}' .
 
+      # Run Trivy vulnerability scanner on the built image
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -90,6 +114,7 @@ jobs:
           output: 'trivy-results.sarif'
           severity: "CRITICAL,HIGH"
 
+      # Upload scan results to GitHub Security tab
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         if: always()
