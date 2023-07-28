@@ -1,0 +1,33 @@
+name: Terraform Pipeline
+
+on: [push]
+
+jobs:
+  terraform_style_check:
+    name: Terraform Style Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install tflint and terraform
+        run: |
+          # Install tflint
+          curl -L "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_Linux_x86_64.zip")" -o tflint.zip
+          unzip tflint.zip
+          sudo mv tflint /usr/local/bin/
+
+          # Install terraform
+          # Add your installation method here
+
+      - name: Terraform fmt
+        run: terraform fmt -recursive
+
+      - name: Tflint scan
+        run: tflint --format sarif > results.sarif
+
+      - name: Upload results to GHAS
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: results.sarif
