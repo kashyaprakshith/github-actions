@@ -140,7 +140,7 @@ jobs:
 
       # Step 6: Run TFLint
       - name: Run TFLint
-        run: tflint -f sarif > tflint_output.sarif
+        run: tflint -f sarif >> tflint.sarif
         continue-on-error: true
 
       # Step 7: Format Terraform code using terraform fmt
@@ -152,4 +152,4 @@ jobs:
       - name: Upload TFLint SARIF output to GHAS
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: tflint_output.sarif
+          sarif_file: tflint.sarif
