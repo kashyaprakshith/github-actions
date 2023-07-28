@@ -1,41 +1,36 @@
-name: TFLint Scan
+name: Terraform Pipeline
 
 on:
   push:
-    paths:
-      - '**/*.tf'
-  pull_request:
-
-permissions: read-all
+    branches:
+      - main
 
 jobs:
-  tflint_scan:
+  terraform_style_check:
+    name: Terraform Style Check
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Terraform and TFLint
-        uses: terraform-linters/setup-tflint@v3
+      - name: Install tflint and terraform
+        run: |
+          # Install tflint
+          curl -L "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_Linux_x86_64.zip")" -o tflint.zip
+          unzip tflint.zip
+          sudo mv tflint /usr/local/bin/
+
+          # Install terraform
+          # Add your installation method here
+
+      - name: Terraform fmt
+        run: terraform fmt -recursive
+
+      - name: Tflint scan
+        run: tflint --format sarif > results.sarif
+
+      - name: Upload results to GHAS
+        uses: github/codeql-action/upload-sarif@v1
         with:
-          tflint_version: v0.19.0 # Replace this version with the desired TFLint version
-
-      - name: Run TFLint
-        run: tflint --format json > tflint_output.json
-
-      # Convert TFLint output to SARIF format
-      - name: Convert TFLint output to SARIF
-        uses: tfsec/tfsec-sarif-action@master
-        with:
-          json_output_path: tflint_output.json
-          sarif_output_path: tflint_sarif_output.sarif
-
-      - name: Display SARIF output
-        run: cat tflint_sarif_output.sarif
-
-      # You can upload the SARIF output to a security scanning platform or GHAS
-      # For GitHub Advanced Security (GHAS) integration, you can use the following step:
-      - name: Upload SARIF to GitHub Advanced Security (GHAS)
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: tflint_sarif_output.sarif
+          sarif_file: results.sarif
