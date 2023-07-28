@@ -52,7 +52,6 @@ jobs:
         uses: aquasecurity/tfsec-action@v1.0.0
         continue-on-error: true
         
-
       - name: Convert tfsec output to SARIF format
         uses: tfsec/tfsec-sarif-action@master
         with:
@@ -114,12 +113,10 @@ jobs:
       - name: Init TFLint
         run: tflint --init
 
-      - name: Run TFLint
+      - name: Run TFLint and generate SARIF
         run: |
-          tflint -f sarif > tflint-results.sarif
-
-        continue-on-error: true
-        
+          tflint -f json | jq '.' > tflint-results.json
+          cat tflint-results.json | sarif-to-json > tflint-results.sarif
 
       - name: Format Terraform code using terraform fmt
         run: terraform fmt -recursive -check=true
