@@ -114,9 +114,21 @@ jobs:
         run: tflint --init
 
       - name: Run TFLint and generate SARIF
-        run: |
-          tflint -f json | jq '.' > tflint-results.json
-          cat tflint-results.json | sarif-to-json > tflint-results.sarif
+        run:  tflint -f json  > tflint-results.json
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Specify the desired Node.js version here
+
+      - name: Install SARIF SDK
+        run: npm install -g sarif-sdk
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Convert JSON to SARIF
+        run: json-to-sarif -i tflint-results.json -o tflint-results.sarif  
 
       - name: Format Terraform code using terraform fmt
         run: terraform fmt -recursive -check=true
