@@ -35,7 +35,7 @@ jobs:
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
           restore-keys: |
             ${{ runner.os }}-terraform-
-            ${{ runner.os }}-      
+            ${{ runner.os }}-
             
       # Step 4: Initialize Terraform
       - name: Initialize Terraform
@@ -107,6 +107,8 @@ jobs:
         continue-on-error: true
 
   tflint:
+    permissions:
+      security-events: write
     runs-on: ubuntu-latest
     steps:
       # Step 1: Checkout source code
