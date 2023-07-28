@@ -115,8 +115,11 @@ jobs:
         run: tflint --init
 
       - name: Run TFLint
-        run: tflint -f sarif > tflint-results.sarif
+        run: tflint -f sarif 
         continue-on-error: true
+        
+      - name: sarif
+        run: tflint --format sarif > tflint-results.sarif
 
       - name: Format Terraform code using terraform fmt
         run: terraform fmt -recursive -check=true
