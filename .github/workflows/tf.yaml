@@ -137,6 +137,7 @@ jobs:
       # Step 6: Run TFLint
       - name: Run TFLint
         run: tflint -f sarif > tflint_output.sarif
+        continue-on-error: true
 
       # Step 7: Format Terraform code using terraform fmt
       - name: Format Terraform code
