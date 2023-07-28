@@ -114,7 +114,7 @@ jobs:
         run: tflint --init
 
       - name: Run TFLint and generate SARIF
-        run:  tflint -f json  > tflint-results.json
+        run:  tflint -f json  
           
       - name: Set up Node.js
         uses: actions/setup-node@v2
