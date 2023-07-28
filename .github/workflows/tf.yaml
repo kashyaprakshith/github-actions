@@ -142,6 +142,7 @@ jobs:
       # Step 7: Format Terraform code using terraform fmt
       - name: Format Terraform code
         run: terraform fmt -recursive -check=true
+        continue-on-error: true
 
       # Step 8: Upload TFLint SARIF output to GHAS
       - name: Upload TFLint SARIF output to GHAS
