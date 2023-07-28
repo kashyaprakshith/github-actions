@@ -1,4 +1,4 @@
-name: Terraform Code Styling Checks...kgz
+name: Terraform Code Styling Checks
 
 on:
   push:
