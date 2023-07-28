@@ -1,4 +1,4 @@
-name: Terraform Code Styling Checks...
+name: Terraform Code Styling Checks
 
 on:
   push:
@@ -41,7 +41,7 @@ jobs:
       - name: Initialize Terraform
         run: terraform init 
 
-      # Step 5: Validation of terraform code
+      # Step 5: Validation of Terraform code
       - name: Validate Terraform code
         run: terraform validate
         continue-on-error: false
@@ -52,8 +52,6 @@ jobs:
 
   tfsec-scan:
     runs-on: ubuntu-latest
-    permissions:
-      security-events: write
     steps:
       # Step 1: Code checkout.
       - name: Code Checkout
