@@ -52,6 +52,8 @@ jobs:
 
   tfsec-scan:
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
     steps:
       # Step 1: Code checkout.
       - name: Code Checkout
