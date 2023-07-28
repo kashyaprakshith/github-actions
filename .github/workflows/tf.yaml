@@ -117,19 +117,17 @@ jobs:
         run:  tflint -f json > tflint-results.json
         continue-on-error: true
           
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'  # Specify the desired Node.js version here
-
-      - name: Install SARIF SDK
-        run: npm install -g sarif-sdk
-
-      - name: Checkout code
-        uses: actions/checkout@v2
 
       - name: Convert JSON to SARIF
-        run: json-to-sarif -i tflint-results.json -o tflint-results.sarif  
+        run: |
+          # Install jq (if not already available)
+          if ! command -v jq &> /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y jq
+          fi
+
+          # Convert JSON to SARIF using jq
+          jq '.' tflint-results.json > tflint-results.sarif  
 
       - name: Format Terraform code using terraform fmt
         run: terraform fmt -recursive -check=true
