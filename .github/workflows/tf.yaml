@@ -62,6 +62,9 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: tfsec.sarif
+          
+      - name: see sarif
+        run: cat tfsec.sarif    
 
   ## checkov scan
   checkov-scan:
