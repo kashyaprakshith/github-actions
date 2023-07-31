@@ -116,6 +116,10 @@ jobs:
       - name: Run TFLint and generate SARIF
         run:  tflint -f sarif 
         continue-on-error: true
+        
+      - name: Run TFLint and generate SARIF
+        run:  tflint -f sarif > tflint-results.sarif
+        continue-on-error: true  
            
 
       - name: Format Terraform code using terraform fmt
