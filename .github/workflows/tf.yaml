@@ -12,20 +12,21 @@ on:
   workflow_dispatch:
 
 permissions: read-all
-jobs: 
+
+jobs:
   build-terraform:
     runs-on: ubuntu-latest
     steps:
       # Checkout Code.
       - name: Checkout code
         uses: actions/checkout@v3
-        
+
       # Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: "1.0.9" # Specify your desired Terraform version here
-          
+
       # Caching Terraform Plugins
       - name: Cache Terraform plugins
         uses: actions/cache@v2
@@ -34,17 +35,17 @@ jobs:
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
           restore-keys: |
             ${{ runner.os }}-terraform-
-            ${{ runner.os }}-      
-            
+            ${{ runner.os }}-
+
       # Initialize Terraform
       - name: Initialize Terraform
-        run: terraform init 
+        run: terraform init
 
       # Validation of terraform code
       - name: Validate Terraform code
         run: terraform validate
         continue-on-error: false
-        
+
       # Planning Terraform changes
       - name: Plan Terraform changes
         run: terraform plan -input=false -lock=false
@@ -66,13 +67,13 @@ jobs:
         with:
           sarif_file: tfsec.sarif
 
-      # upload results to GHAS 
+      # upload results to GHAS
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: tfsec.sarif
 
-## checkov scan
+  ## checkov scan
   checkov-scan:
     runs-on: ubuntu-latest
     steps:
@@ -91,9 +92,9 @@ jobs:
         id: checkov
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: ./  ##  replace"./" with the path of terraform files for scanning.
+          directory: ./  ## replace "./" with the path of terraform files for scanning.
         continue-on-error: true
-        
+
       # Rename SARIF file
       - name: Rename SARIF file
         run: mv results.sarif checkov-results.sarif
@@ -111,37 +112,38 @@ jobs:
     permissions:
       security-events: write
 
-
     steps:
-    - uses: actions/checkout@v3
-      name: Checkout source code
+      - uses: actions/checkout@v3
+        name: Checkout source code
 
-    - uses: actions/cache@v3
-      name: Cache plugin dir
-      with:
-        path: ~/.tflint.d/plugins
-        key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+      - uses: actions/cache@v3
+        name: Cache plugin dir
+        with:
+          path: ~/.tflint.d/plugins
+          key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
-    - uses: terraform-linters/setup-tflint@v3
-      name: Setup TFLint
-      with:
-        tflint_version: v0.47.0
+      - uses: terraform-linters/setup-tflint@v3
+        name: Setup TFLint
+        with:
+          tflint_version: v0.47.0
 
-    - name: Show version
-      run: tflint --version
+      - name: Show version
+        run: tflint --version
 
-    - name: Init TFLint
-      run: tflint --init
-      
-    - name: Run TFLint
-      run: tflint -f sarif
-      continue-on-error: true  
+      - name: Init TFLint
+        run: tflint --init
 
-    - name: Run TFLint
-      run: tflint -f sarif > tflint-results.sarif
-      continue-on-error: true
-      
-    - name: Upload TFLint SARIF output to GHAS
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: tflint-results.sarif   
+      - name: Run TFLint and generate SARIF
+        run: tflint -f sarif > tflint-results.sarif
+        continue-on-error: true
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Process and sort SARIF results
+        run: cat tflint-results.sarif | jq -rc '.runs[].results[] | {rule: .ruleId, file: .locations[0].physicalLocation.artifactLocation.uri, codeFlowsCount: (.codeFlows | length), threadFlowStepsCount: (.codeFlows | reduce .[]? as $item (0; . + ($item.threadFlows[0].locations | length)))}' | jq -s -c 'sort_by(.threadFlowStepsCount) | .[]' > sorted-tflint-results.json
+
+      - name: Upload TFLint SARIF output to GHAS
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: sorted-tflint-results.sarif
