@@ -105,7 +105,7 @@ jobs:
       - uses: terraform-linters/setup-tflint@v3
         name: Setup TFLint
         with:
-          tflint_version: v0.47.0
+          tflint_version: v0.46.1
 
       - name: Show version
         run: tflint --version
@@ -114,20 +114,9 @@ jobs:
         run: tflint --init
 
       - name: Run TFLint and generate SARIF
-        run:  tflint -f json > tflint-results.json
+        run:  tflint -f sarif > tflint-results.sarif
         continue-on-error: true
-          
-
-      - name: Convert JSON to SARIF
-        run: |
-          # Install jq (if not already available)
-          if ! command -v jq &> /dev/null; then
-            sudo apt-get update
-            sudo apt-get install -y jq
-          fi
-
-          # Convert JSON to SARIF using jq
-          jq '.' tflint-results.json > tflint-results.sarif  
+           
 
       - name: Format Terraform code using terraform fmt
         run: terraform fmt -recursive -check=true
