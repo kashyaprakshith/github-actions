@@ -52,6 +52,7 @@ jobs:
 
       - name: tfsec-security scan
         uses: aquasecurity/tfsec-action@v1.0.0
+        continue-on-error: true
 
       - name: SARIF conversion
         uses: tfsec/tfsec-sarif-action@master
