@@ -114,7 +114,7 @@ jobs:
         run: tflint --init
 
       - name: Run TFLint and generate SARIF
-        run:  tflint -f sarif 
+        run:  tflint -f sarif > tflint-results.sarif
         continue-on-error: true
            
 
