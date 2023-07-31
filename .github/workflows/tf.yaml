@@ -232,12 +232,7 @@ jobs:
 }
 ' >> terrascan_output.sarif
 
-      - name: Upload SARIF artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: terrascan-sarif-results
-          path: terrascan_output.sarif
-' >> terrascan_output.sarif
+      
         
       - name: Run TFLint and generate SARIF
         run:  tflint -f sarif > tflint-results.sarif
