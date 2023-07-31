@@ -17,17 +17,14 @@ jobs:
   build-terraform:
     runs-on: ubuntu-latest
     steps:
-      # Checkout Code.
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: "1.0.9" # Specify your desired Terraform version here
+          terraform_version: "1.0.9"
 
-      # Caching Terraform Plugins
       - name: Cache Terraform plugins
         uses: actions/cache@v2
         with:
@@ -37,37 +34,30 @@ jobs:
             ${{ runner.os }}-terraform-
             ${{ runner.os }}-
 
-      # Initialize Terraform
       - name: Initialize Terraform
         run: terraform init
 
-      # Validation of terraform code
       - name: Validate Terraform code
         run: terraform validate
         continue-on-error: false
 
-      # Planning Terraform changes
       - name: Plan Terraform changes
         run: terraform plan -input=false -lock=false
 
   tfsec-scan:
     runs-on: ubuntu-latest
     steps:
-      # code checkout.
       - name: Code Checkout
         uses: actions/checkout@master
 
-      # run tfsec scan.
       - name: tfsec-security scan
         uses: aquasecurity/tfsec-action@v1.0.0
 
-      # convert tfsec output to SARIF format.
       - name: SARIF conversion
         uses: tfsec/tfsec-sarif-action@master
         with:
           sarif_file: tfsec.sarif
 
-      # upload results to GHAS
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
@@ -77,17 +67,14 @@ jobs:
   checkov-scan:
     runs-on: ubuntu-latest
     steps:
-      # Code Checkout
       - name: Code Checkout
         uses: actions/checkout@v2
 
-      # Setup Python 3.8
       - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
 
-      # Run checkov scan
       - name: Test with checkov
         id: checkov
         uses: bridgecrewio/checkov-action@master
@@ -95,12 +82,10 @@ jobs:
           directory: ./  ## replace "./" with the path of terraform files for scanning.
         continue-on-error: true
 
-      # Rename SARIF file
       - name: Rename SARIF file
         run: mv results.sarif checkov-results.sarif
         continue-on-error: true
 
-      # Upload results to GHAS
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v2
         with:
@@ -140,8 +125,10 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Process and sort SARIF results
-        run: cat tflint-results.sarif | jq -rc '.runs[].results[] | {rule: .ruleId, file: .locations[0].physicalLocation.artifactLocation.uri, codeFlowsCount: (.codeFlows | length), threadFlowStepsCount: (.codeFlows | reduce .[]? as $item (0; . + ($item.threadFlows[0].locations | length)))}' | jq -s -c 'sort_by(.threadFlowStepsCount) | .[]' > sorted-tflint-results.json
+      - name: Remove unwanted section from SARIF file
+        run: |
+          cat tflint-results.sarif | jq 'del(.runs[1])' > tflint-results-updated.sarif
+          mv tflint-results-updated.sarif tflint-results.sarif
 
       - name: Upload TFLint SARIF output to GHAS
         uses: github/codeql-action/upload-sarif@v2
