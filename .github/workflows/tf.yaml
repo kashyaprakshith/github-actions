@@ -53,9 +53,13 @@ jobs:
         continue-on-error: true
 
       - name: Convert tfsec output to SARIF format
-        uses: tfsec/tfsec-sarif-action@master
-        with:
-          sarif_file: tfsec-results.sarif
+        run: |
+          echo '{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0-rtm.5.json",
+  "runs": [' > tfsec-results.sarif
+          cat tflint-results.sarif >> tfsec-results.sarif
+          echo ']}' >> tfsec-results.sarif
 
       - name: Upload tfsec SARIF results
         uses: github/codeql-action/upload-sarif@v2
