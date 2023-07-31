@@ -108,6 +108,7 @@ jobs:
 
   tflint:
     runs-on: ubuntu-latest
+     security-events: write
 
     steps:
     - uses: actions/checkout@v3
