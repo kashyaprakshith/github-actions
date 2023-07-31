@@ -136,10 +136,10 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Remove unwanted section from SARIF file
+      - name: Remove unwanted 
         run: |
-          cat tflint-results.sarif | jq '.runs[0].results[].locations[0].physicalLocation.region.startLine = 1 |
-              .runs[0].results[].locations[0].physicalLocation.region.startColumn = 1'  > tflint-results-updated.sarif
+          jq '.runs[0].results[].locations[0].physicalLocation.region.startLine = 1 |
+              .runs[0].results[].locations[0].physicalLocation.region.startColumn = 1' tflint-results.sarif > tflint-results-updated.sarif
           mv tflint-results-updated.sarif tflint-results.sarif
           
       - name: see corrected sarif file
@@ -148,4 +148,4 @@ jobs:
       - name: Upload TFLint SARIF output to GHAS
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file:  tflint-results.sarif
+          sarif_file: tflint-results.sarif
