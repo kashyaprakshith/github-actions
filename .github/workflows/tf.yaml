@@ -140,6 +140,9 @@ jobs:
         run: |
           cat tflint-results.sarif | jq 'del(.runs[1])' > tflint-results-updated.sarif
           mv tflint-results-updated.sarif tflint-results.sarif
+          
+      - name: see corrected sarif file
+        run: cat tflint-results.sarif
 
       - name: Upload TFLint SARIF output to GHAS
         uses: github/codeql-action/upload-sarif@v1
