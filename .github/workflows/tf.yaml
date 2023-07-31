@@ -132,6 +132,10 @@ jobs:
 
     - name: Init TFLint
       run: tflint --init
+      
+    - name: Run TFLint
+      run: tflint -f sarif
+      continue-on-error: true  
 
     - name: Run TFLint
       run: tflint -f sarif > tflint-results.sarif
