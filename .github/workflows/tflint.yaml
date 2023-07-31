@@ -57,6 +57,6 @@ jobs:
      #     mv tflint-results-updated.sarif tflint-results.sarif
 
       - name: Upload TFLint SARIF output to GHAS
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file:  tflint-results.sarif
