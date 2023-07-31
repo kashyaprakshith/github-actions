@@ -138,7 +138,7 @@ jobs:
 
       - name: Remove unwanted section from SARIF file
         run: |
-          cat tflint-results.sarif | jq 'del(.runs[1])' > tflint-results-updated.sarif
+          cat tflint-results.sarif | jq '.runs[0].results[].locations[0].physicalLocation.region.startLine = 1'  > tflint-results-updated.sarif
           mv tflint-results-updated.sarif tflint-results.sarif
           
       - name: see corrected sarif file
