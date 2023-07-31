@@ -133,4 +133,4 @@ jobs:
       - name: Upload TFLint SARIF output to GHAS
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: sorted-tflint-results.sarif
+          sarif_file:  tflint-results.sarif
