@@ -100,7 +100,7 @@ jobs:
         run: tflint --init
 
       - name: Run TFLint and generate SARIF
-        run: tflint --recursive --module --format sarif 
+        run: tflint --recursive --module --format sarif > tflint-results.sarif
         continue-on-error: true
 
       - name: Upload TFLint SARIF output to GHAS
