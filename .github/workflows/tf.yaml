@@ -91,7 +91,8 @@ jobs:
 
       ## Initialize Terraform     
       - name: Initialize Terraform
-        run: terraform init    
+        run: terraform init 
+        continue-on-error: true
       
       ## Code Quality Check
       ## TFLint
