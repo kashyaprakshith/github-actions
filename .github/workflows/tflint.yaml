@@ -1,62 +1,16 @@
-name: build
+name: Terraform Format
 
 on:
-  push:
+  push: 
     paths-ignore:
-      - 'docs/**'
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-  workflow_dispatch:
-
-permissions: read-all
+      - 'docs/**' # Adjust the path to exclude any directories from formatting
 
 jobs:
-  tflint:
+  terraform_format:
     runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-
     steps:
-      - uses: actions/checkout@v3
-        name: Checkout source code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - uses: actions/cache@v3
-        name: Cache plugin dir
-        with:
-          path: ~/.tflint.d/plugins
-          key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
-
-      - uses: terraform-linters/setup-tflint@v3
-        name: Setup TFLint
-        with:
-          tflint_version: v0.47.0
-
-      - name: Show version
-        run: tflint --version
-
-      - name: Init TFLint
-        run: tflint --init
-        
-      - name: Run TFLint and generate SARIF
-        run: tflint -f sarif 
-        continue-on-error: true
-
-      - name: Run TFLint and generate SARIF
-        run: tflint -f sarif > tflint-results.sarif
-        continue-on-error: true
-
-     # - name: Install jq
-      #  run: sudo apt-get update && sudo apt-get install -y jq
-
-     # - name: Remove unwanted section from SARIF file
-     #   run: |
-     #     cat tflint-results.sarif | jq 'del(.runs[1])' > tflint-results-updated.sarif
-     #     mv tflint-results-updated.sarif tflint-results.sarif
-
-      - name: Upload TFLint SARIF output to GHAS
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file:  tflint-results.sarif
+      - name: Terraform Format
+        run: terraform fmt -recursive
