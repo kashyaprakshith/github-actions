@@ -19,6 +19,77 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        
+      ## Security check
+      # tfsec scans
+      - name: tfsec-security scan
+        uses: aquasecurity/tfsec-action@v1.0.0
+        continue-on-error: true
+
+      - name: SARIF conversion
+        uses: tfsec/tfsec-sarif-action@master
+        with:
+          sarif_file: tfsec.sarif
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: tfsec.sarif
+
+      ## checkov scan
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Test with checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ./  ## replace "./" with the path of terraform files for scanning.
+        continue-on-error: true
+
+      - name: Rename SARIF file
+        run: mv results.sarif checkov-results.sarif
+        continue-on-error: true
+
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: checkov-results.sarif
+        continue-on-error: true
+
+      ## Code Quality Check
+      ## tflint 
+      - uses: actions/cache@v3
+        name: Cache plugin dir
+        with:
+          path: ~/.tflint.d/plugins
+          key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
+      - uses: terraform-linters/setup-tflint@v3
+        name: Setup TFLint
+        with:
+          tflint_version: v0.47.0
+
+      - name: Init TFLint
+        run: tflint --init
+
+      - name: Run TFLint and generate SARIF
+        run: tflint -f sarif 
+        continue-on-error: true
+
+      - name: Run TFLint and generate SARIF
+        run: tflint -f sarif > tflint-results.sarif
+        continue-on-error: true
+
+      - name: Upload TFLint SARIF output to GHAS
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: tflint-results.sarif
+
+      ## Terraform build 
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -43,94 +114,3 @@ jobs:
 
       - name: Plan Terraform changes
         run: terraform plan -input=false -lock=false
-
-  tfsec-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Code Checkout
-        uses: actions/checkout@master
-
-      - name: tfsec-security scan
-        uses: aquasecurity/tfsec-action@v1.0.0
-        continue-on-error: true
-
-      - name: SARIF conversion
-        uses: tfsec/tfsec-sarif-action@master
-        with:
-          sarif_file: tfsec.sarif
-          
-      - name: see sarif
-        run: cat tfsec.sarif     
-
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: tfsec.sarif
-          
-      - name: see sarif
-        run: cat tfsec.sarif    
-
-  ## checkov scan
-  checkov-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Code Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-
-      - name: Test with checkov
-        id: checkov
-        uses: bridgecrewio/checkov-action@master
-        with:
-          directory: ./  ## replace "./" with the path of terraform files for scanning.
-        continue-on-error: true
-
-      - name: Rename SARIF file
-        run: mv results.sarif checkov-results.sarif
-        continue-on-error: true
-
-      - name: Upload SARIF results
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: checkov-results.sarif
-        continue-on-error: true
-
-  tflint:
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-
-    steps:
-      - uses: actions/checkout@v3
-        name: Checkout source code
-
-      - uses: actions/cache@v3
-        name: Cache plugin dir
-        with:
-          path: ~/.tflint.d/plugins
-          key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
-
-      - uses: terraform-linters/setup-tflint@v3
-        name: Setup TFLint
-        with:
-          tflint_version: v0.47.0
-          
-      - name: Init TFLint
-        run: tflint --init
-        
-      - name: Run TFLint and generate SARIF
-        run: tflint -f sarif 
-        continue-on-error: true
-
-      - name: Run TFLint and generate SARIF
-        run: tflint -f sarif > tflint-results.sarif
-        continue-on-error: true
-
-      - name: Upload TFLint SARIF output to GHAS
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: tflint-results.sarif
