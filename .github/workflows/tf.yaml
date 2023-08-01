@@ -23,7 +23,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         
-      ## setup Terraform
+      ## Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -38,17 +38,10 @@ jobs:
             ${{ runner.os }}-terraform-
             ${{ runner.os }}-
             
-      ## Setup TFlint      
-      - uses: actions/cache@v3
-        name: Cache plugin dir
-        with:
-          path: ~/.tflint.d/plugins
-          key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
-
-      - uses: terraform-linters/setup-tflint@v3
-        name: Setup TFLint
-        with:
-          tflint_version: v0.47.0
+      ## Initialize Terraform     
+      - name: Initialize Terraform
+        run: terraform init
+        continue-on-error: true
         
       ## Security check
       # tfsec scans
@@ -88,13 +81,20 @@ jobs:
         with:
           sarif_file: checkov-results.sarif
         continue-on-error: true
-
-      ## Initialize Terraform     
-      - name: Initialize Terraform
-        run: terraform init
       
       ## Code Quality Check
-      ## TFLint
+      ## TFLint    
+      - uses: actions/cache@v3
+        name: Cache plugin dir
+        with:
+          path: ~/.tflint.d/plugins
+          key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
+      - uses: terraform-linters/setup-tflint@v3
+        name: Setup TFLint
+        with:
+          tflint_version: v0.47.0
+          
       - name: Init TFLint
         run: tflint --init
 
