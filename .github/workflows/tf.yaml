@@ -14,7 +14,10 @@ on:
 permissions: read-all
 
 jobs:
+
   build-terraform:
+    permissions:
+      security-events: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
