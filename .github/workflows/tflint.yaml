@@ -1,9 +1,7 @@
-name: Terraform Format
+name: Terraform Format..
 
-on:
-  push:
-    paths-ignore:
-      - 'docs/**' # Adjust the path to exclude any directories from formatting
+on: [push]
+    
 
 jobs:
   terraform_format:
