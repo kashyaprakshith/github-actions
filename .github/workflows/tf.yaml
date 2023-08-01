@@ -118,10 +118,7 @@ jobs:
         name: Setup TFLint
         with:
           tflint_version: v0.47.0
-
-      - name: Show version
-        run: tflint --version
-
+          
       - name: Init TFLint
         run: tflint --init
         
@@ -132,9 +129,6 @@ jobs:
       - name: Run TFLint and generate SARIF
         run: tflint -f sarif > tflint-results.sarif
         continue-on-error: true
-          
-      - name: see corrected sarif file
-        run: cat tflint-results.sarif
 
       - name: Upload TFLint SARIF output to GHAS
         uses: github/codeql-action/upload-sarif@v2
