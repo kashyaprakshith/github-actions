@@ -38,7 +38,7 @@ jobs:
             ${{ runner.os }}-terraform-
             ${{ runner.os }}-
             
-      # Setup TFlint      
+      ## Setup TFlint      
       - uses: actions/cache@v3
         name: Cache plugin dir
         with:
@@ -91,8 +91,7 @@ jobs:
 
       ## Initialize Terraform     
       - name: Initialize Terraform
-        run: terraform init 
-        continue-on-error: true
+        run: terraform init
       
       ## Code Quality Check
       ## TFLint
