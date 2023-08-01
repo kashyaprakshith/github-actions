@@ -132,15 +132,6 @@ jobs:
       - name: Run TFLint and generate SARIF
         run: tflint -f sarif > tflint-results.sarif
         continue-on-error: true
-
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
-      - name: Remove unwanted 
-        run: |
-          jq '.runs[0].results[].locations[0].physicalLocation.region.startLine = 1 |
-              .runs[0].results[].locations[0].physicalLocation.region.startColumn = 1' tflint-results.sarif > tflint-results-updated.sarif
-          mv tflint-results-updated.sarif tflint-results.sarif
           
       - name: see corrected sarif file
         run: cat tflint-results.sarif
