@@ -23,6 +23,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         
+      ## setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: "1.0.9"
+
+      - name: Cache Terraform plugins
+        uses: actions/cache@v2
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+            ${{ runner.os }}-
+            
+      # Setup TFlint      
+      - uses: actions/cache@v3
+        name: Cache plugin dir
+        with:
+          path: ~/.tflint.d/plugins
+          key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
+      - uses: terraform-linters/setup-tflint@v3
+        name: Setup TFLint
+        with:
+          tflint_version: v0.47.0
+        
       ## Security check
       # tfsec scans
       - name: tfsec-security scan
@@ -62,24 +89,17 @@ jobs:
           sarif_file: checkov-results.sarif
         continue-on-error: true
 
+      ## Initialize Terraform     
+      - name: Initialize Terraform
+        run: terraform init    
+      
       ## Code Quality Check
-      ## tflint 
-      - uses: actions/cache@v3
-        name: Cache plugin dir
-        with:
-          path: ~/.tflint.d/plugins
-          key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
-
-      - uses: terraform-linters/setup-tflint@v3
-        name: Setup TFLint
-        with:
-          tflint_version: v0.47.0
-
+      ## TFLint
       - name: Init TFLint
         run: tflint --init
 
       - name: Run TFLint and generate SARIF
-        run: tflint -f sarif > tflint-results.sarif
+        run: tflint --recursive --module --format sarif > tflint-results.sarif
         continue-on-error: true
 
       - name: Upload TFLint SARIF output to GHAS
@@ -91,27 +111,11 @@ jobs:
       - name: Terraform Format
         run: terraform fmt -recursive
 
-      ## Terraform build 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: "1.0.9"
-
-      - name: Cache Terraform plugins
-        uses: actions/cache@v2
-        with:
-          path: ~/.terraform.d/plugin-cache
-          key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
-          restore-keys: |
-            ${{ runner.os }}-terraform-
-            ${{ runner.os }}-
-
-      - name: Initialize Terraform
-        run: terraform init
-
+      # Terraform Validate
       - name: Validate Terraform code
         run: terraform validate
         continue-on-error: false
-
+        
+      # Terraform Plan
       - name: Plan Terraform changes
         run: terraform plan -input=false -lock=false
