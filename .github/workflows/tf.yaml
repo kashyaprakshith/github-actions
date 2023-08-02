@@ -41,6 +41,7 @@ jobs:
       ## Initialize Terraform     
       - name: Initialize Terraform
         run: terraform init
+        continue-on-error: true
         
       ## Security check
       # tfsec scans
@@ -75,7 +76,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: checkov-results.sarif
-        continue-on-error: true
+        
       
       ## Code Quality Check
       ## TFLint    
