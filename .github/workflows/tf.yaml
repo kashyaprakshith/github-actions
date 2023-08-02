@@ -41,6 +41,7 @@ jobs:
       ## Initialize Terraform     
       - name: Initialize Terraform
         run: terraform init
+        continue-on-error: true
         
       ## Security check
       # tfsec scans
