@@ -70,12 +70,9 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: ./  ## replace "./" with the path of terraform files for scanning.
+          output_file_path: checkov-results.sarif
         continue-on-error: true
-
-      - name: Rename SARIF file
-        run: mv results.sarif checkov-results.sarif
-        continue-on-error: true
-
+        
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v2
         with:
