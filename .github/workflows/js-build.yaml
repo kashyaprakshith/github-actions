@@ -46,6 +46,9 @@ jobs:
       - name: npm clean install
         run: npm ci
 
+      - name: run prettier Check
+        run: npx prettier . --check   
+
       - name: Test
         run: npm test
 
