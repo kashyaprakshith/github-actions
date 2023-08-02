@@ -52,7 +52,7 @@ jobs:
         with:
           soft_fail: true
           format: sarif
-          args: --out tfsec-results.sarif
+          output_file_path: tfsec-results.sarif
           
       - name: see 
         run: ls -al
