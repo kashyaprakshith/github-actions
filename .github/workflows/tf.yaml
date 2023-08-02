@@ -14,6 +14,7 @@ on:
 permissions: read-all
 
 jobs:
+
   build-terraform:
     permissions:
       security-events: write
@@ -21,7 +22,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+        
       ## Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -36,20 +37,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-terraform-
             ${{ runner.os }}-
-
-      ## Initialize Terraform
+            
+      ## Initialize Terraform     
       - name: Initialize Terraform
         run: terraform init
-        continue-on-error: true
-
+        
       ## Security check
       # tfsec scans
       - name: tfsec-security scan
         uses: aquasecurity/tfsec-action@v1.0.0
-        with:
-          format: sarif
-          sarif_file: tfsec.sarif
         continue-on-error: true
+
+      - name: SARIF conversion
+        uses: tfsec/tfsec-sarif-action@master
+        with:
+          sarif_file: tfsec.sarif
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
@@ -78,9 +80,9 @@ jobs:
         with:
           sarif_file: checkov-results.sarif
         continue-on-error: true
-
+      
       ## Code Quality Check
-      ## TFLint
+      ## TFLint    
       - uses: actions/cache@v3
         name: Cache plugin dir
         with:
@@ -91,7 +93,7 @@ jobs:
         name: Setup TFLint
         with:
           tflint_version: v0.47.0
-
+          
       - name: Init TFLint
         run: tflint --init
 
@@ -103,7 +105,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: tflint-results.sarif
-
+          
       # Run Terraform Format
       - name: Terraform Format
         run: terraform fmt -recursive
@@ -112,7 +114,7 @@ jobs:
       - name: Validate Terraform code
         run: terraform validate
         continue-on-error: false
-
+        
       # Terraform Plan
       - name: Plan Terraform changes
         run: terraform plan -input=false -lock=false
