@@ -45,6 +45,8 @@ jobs:
         
       ## Security check
       # tfsec scans
+      - name: Clone repo
+        uses: actions/checkout@master
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
         with:
