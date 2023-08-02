@@ -54,6 +54,9 @@ jobs:
           format: sarif
           args: --out tfsec-results.sarif
           
+      - name: see 
+        run: ls -al
+        
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
