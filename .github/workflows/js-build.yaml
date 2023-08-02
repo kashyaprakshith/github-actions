@@ -1,14 +1,5 @@
 name: build
-on:
-  push:
-    paths-ignore:
-      - 'docs/**'
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-  workflow_dispatch:
+on: [push]
 
 permissions:
   actions: read
