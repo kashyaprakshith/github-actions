@@ -65,9 +65,6 @@ jobs:
           output_file_path: checkov-results.sarif
         continue-on-error: true
         
-      - name: see sarif 
-        run: cat checkov-results.sarif
-        
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v2
         with:
