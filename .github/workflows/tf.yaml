@@ -45,14 +45,13 @@ jobs:
         
       ## Security check
       # tfsec scans
-      - name: tfsec-security scan
-        uses: aquasecurity/tfsec-action@v1.0.0
-        continue-on-error: true
-
-      - name: SARIF conversion
-        uses: tfsec/tfsec-sarif-action@master
+      - name: tfsec
+        uses: aquasecurity/tfsec-sarif-action@v0.1.0
         with:
           sarif_file: tfsec.sarif
+          
+      - name: see sarif
+        run: tfsec.sarif
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
@@ -72,6 +71,9 @@ jobs:
           directory: ./  ## replace "./" with the path of terraform files for scanning.
           output_file_path: checkov-results.sarif
         continue-on-error: true
+        
+      - name: see sarif 
+        run: cat checkov-results.sarif
         
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v2
