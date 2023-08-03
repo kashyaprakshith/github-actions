@@ -37,6 +37,7 @@ jobs:
       - name: npm clean install
         run: npm ci
 
+      # Code Style Check
       - name: run prettier Check
         run: npx prettier --check "**/*.js"   
         continue-on-error: true
