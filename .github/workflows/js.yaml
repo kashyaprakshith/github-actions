@@ -38,7 +38,7 @@ jobs:
         run: npm ci
 
       - name: run prettier Check
-        run: npx prettier . --check   
+        run: npx prettier --check "**/*.js"   
         continue-on-error: true
 
       - name: Test
