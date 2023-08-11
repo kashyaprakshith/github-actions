@@ -51,7 +51,7 @@ jobs:
       - name: tfsec
         uses: aquasecurity/tfsec-sarif-action@v0.1.4
         with:
-          working_directory: ./
+          working_directory: ./dev
           sarif_file: tfsec.sarif  
         
       - name: Upload SARIF file
@@ -69,7 +69,7 @@ jobs:
         id: checkov
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: ./  ## replace "./" with the path of terraform files for scanning.
+          directory: ./dev  ## replace "./" with the path of terraform files for scanning.
           output_file_path: checkov-results.sarif
         continue-on-error: true
         
