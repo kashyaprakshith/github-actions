@@ -83,32 +83,32 @@ jobs:
       
       ## Code Quality Check
       ## TFLint    
-      - uses: actions/cache@v3
-        name: Cache plugin dir
-        with:
-          path: ~/.tflint.d/plugins
-          key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+#      - uses: actions/cache@v3
+ #       name: Cache plugin dir
+  #      with:
+   #       path: ~/.tflint.d/plugins
+    #      key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
-      - uses: terraform-linters/setup-tflint@v3
-        name: Setup TFLint
-        with:
-          tflint_version: v0.47.0
-          
-      - name: Init TFLint
-        run: tflint --init
+     # - uses: terraform-linters/setup-tflint@v3
+      ##  name: Setup TFLint
+        #with:
+         # tflint_version: v0.47.0
+          # 
+    #  - name: Init TFLint
+     #   run: tflint --init
 
-      - name: Run TFLint and generate SARIF
-        run: tflint --recursive --module --format sarif > tflint-results.sarif
-        continue-on-error: true
+      #- name: Run TFLint and generate SARIF
+       # run: tflint --recursive --module --format sarif > tflint-results.sarif
+        #continue-on-error: true
 
-      - name: Upload TFLint SARIF output to GHAS
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: tflint-results.sarif
+     # - name: Upload TFLint SARIF output to GHAS
+      #  uses: github/codeql-action/upload-sarif@v2
+       # with:
+        #  sarif_file: tflint-results.sarif
           
       # Run Terraform Format
-      - name: Terraform Format
-        run: terraform fmt -recursive
+      #- name: Terraform Format
+       # run: terraform fmt -recursive
 
       # Terraform Validate
       - name: Validate Terraform code
