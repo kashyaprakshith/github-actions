@@ -3,12 +3,12 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = "invalid-region-value"  # Intentional error here
 }
 
 resource "aws_s3_bucket" "example_bucket" {
   bucket = "my-example-bucket"
-  acl    = "invalid_acl_value"  # Intentional error here
+  acl    = "private"
 
   tags = {
     Name = "ExampleBucket"
