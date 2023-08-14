@@ -41,7 +41,172 @@ terraform-validate:
         run: terraform validate
         continue-on-error: false
 
+name: build
 
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
+
+env:
+  TF_CLOUD_ORGANIZATION: "rakshith-kashyap"
+  TF_API_TOKEN: "${{ secrets.TF_TOKEN }}"
+  TF_WORKSPACE: "rakshith-test"
+  CONFIG_DIRECTORY: "./"
+
+permissions: read-all
+
+jobs:
+  terraform-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      ## Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.0.9"
+
+      - name: Cache Terraform plugins
+        uses: actions/cache@v2
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+            ${{ runner.os }}-
+            
+      # Terraform Validate
+      - name: Validate Terraform code
+        run: terraform validate
+        continue-on-error: false
+        
+  ## tfsec Scan
+  tfsec:
+    permissions:
+      security-events: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: tfsec
+        uses: aquasecurity/tfsec-sarif-action@v0.1.4
+        with:
+          working_directory: ./  ## replace "./" with the path of terraform files for scanning.
+          sarif_file: tfsec.sarif
+      # continue-on-error: true
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: tfsec.sarif
+
+  ## Checkov Scan        
+  checkov:
+    permissions:
+      security-events: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Test with checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ./  ## replace "./" with the path of terraform files for scanning.
+          framework: terraform
+          download_external_modules: true
+          output_file_path: checkov-results.sarif
+        continue-on-error: true
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: checkov-results.sarif
+
+  ## Code Quality Check
+  ## Terraform lint
+  terraform-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v3
+        name: Cache plugin dir
+        with:
+          path: ~/.tflint.d/plugins
+          key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
+      - uses: terraform-linters/setup-tflint@v3
+        name: Setup TFLint
+        with:
+          tflint_version: v0.47.0
+          
+      - name: Init TFLint
+        run: tflint --init
+
+      - name: Run TFLint and generate SARIF
+        run: tflint --recursive --module --format sarif > tflint-results.sarif
+        continue-on-error: true
+
+      - name: Upload TFLint SARIF output to GHAS
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: tflint-results.sarif
+
+  ## Run Terraform Format
+  terraform-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Terraform Format
+        run: terraform fmt -recursive   
+
+  ## Terraform Cloud Plan        
+  tfc-plan:
+    permissions:
+      security-events: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      ## Upload the Configuration to Terraform Cloud
+      - name: Upload Configuration
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
+        id: upload
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          directory: ${{ env.CONFIG_DIRECTORY }}
+          speculative: true
+
+      ## Create Run
+      - name: Create Run
+        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.4
+        id: run
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
+          plan_only: true
+
+      ## Plan Results
+      - name: Get Plan Output
+        uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.4
+        id: plan-output
+        with:
+          plan: ${{ steps.run.outputs.plan_id }}
   tfsec-scan:
     runs-on: ubuntu-latest
     steps:
