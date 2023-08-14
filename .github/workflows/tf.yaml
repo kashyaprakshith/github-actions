@@ -23,7 +23,7 @@ terraform-validate:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: "1.0.9"
+          terraform_version: "1.5.5"
 
       - name: Cache Terraform plugins
         uses: actions/cache@v2
