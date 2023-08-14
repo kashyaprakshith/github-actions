@@ -21,8 +21,30 @@ permissions: read-all
 
 jobs:
   terraform-validate:
-     runs-on: ubuntu-latest
-     steps:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      ## Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.0.9"
+
+      - name: Cache Terraform plugins
+        uses: actions/cache@v2
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+            ${{ runner.os }}-
+            
+      ## Initialize Terraform     
+      - name: Initialize Terraform
+        run: terraform init
+
       # Terraform Validate
       - name: Validate Terraform code
         run: terraform validate
