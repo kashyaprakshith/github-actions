@@ -100,9 +100,6 @@ jobs:
   ## Code Quality Check
   ## Terraform lint
   terraform-lint:
-    permissions:
-      security-events: write
-      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/cache@v3
