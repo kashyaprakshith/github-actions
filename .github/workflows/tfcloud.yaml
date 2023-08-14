@@ -40,6 +40,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-terraform-
             ${{ runner.os }}-
+            
+      ## Initialize Terraform     
+      - name: Initialize Terraform
+        run: terraform init
 
       # Terraform Validate
       - name: Validate Terraform code
