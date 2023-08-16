@@ -1,7 +1,12 @@
 terraform {
-  required_version = ">= 1.0.0"
-}
+  cloud {
+    organization = "rakshith-kashyap"
 
+    workspaces {
+      name = "rakshith-test"
+    }
+  }
+}
 provider "aws" {
   region = "us-west-2"
 }
