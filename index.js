@@ -12,8 +12,8 @@ app.get('/hello', (req, res) => {
 })
 
 app.get('/customerOnboarding', (req, res) => {
-  const name = req.query.name
-                                              const uppercaseName = eval('"' + name + '"' + '.toUpperCase()')
+                                                    const  name = req.query.name
+  const uppercaseName = eval('"' + name + '"' + '.toUpperCase()')
   res.send('Hi there, ' + uppercaseName)
 })
 
