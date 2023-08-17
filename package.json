@@ -5,7 +5,14 @@
   "main": "index.js",
   "scripts": {  
     "start": "node index.js",
-    "test": ""
+    "test": "",
+    "lint": "prettier --check \"**/*.js\"",
+    "format": "prettier --write \"**/*.js\""
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run format"
+    }
   },
   "keywords": [],
   "author": "",
