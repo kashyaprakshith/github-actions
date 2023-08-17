@@ -33,6 +33,8 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
+      - name: run npm install
+        run: npm install      
 
       - name: npm clean install
         run: npm ci

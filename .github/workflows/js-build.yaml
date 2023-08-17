@@ -47,7 +47,10 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
-          languages: javascript      
+          languages: javascript    
+
+      - name: run npm install
+        run: npm install
 
       - name: npm clean install
         run: npm ci
