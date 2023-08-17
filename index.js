@@ -7,13 +7,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/hello', (req, res) => {
-  const name = req.query.name;
-  res.send(`<h1>Hello, ${name}</h1>`);
+                          const name = req.query.name;
+                           res.send(`<h1>Hello, ${name}</h1>`);
 });
 
 app.get('/customerOnboarding', (req, res) => {
-  const name = req.query.name;
-  const uppercaseName = eval('"' + name + '"' + '.toUpperCase()');
+                       const name = req.query.name;
+                              const uppercaseName = eval('"' + name + '"' + '.toUpperCase()');
   res.send('Hi there, ' + uppercaseName);
 });
 
