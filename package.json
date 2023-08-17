@@ -11,11 +11,6 @@
     "format": "prettier --write \"**/*.js\"",
     "pre-commit": "npm run format"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
-    }
-  },
   "keywords": [],
   "author": "",
   "license": "MIT",
