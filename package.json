@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {  
+  "scripts": {
     "start": "node index.js",
     "test": "",
     "lint": "prettier --check \"**/*.js\"",
@@ -18,7 +18,8 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "husky": "^8.0.3"
+    "husky": "^8.0.3",
+    "prettier": "3.0.2"
   },
   "dependencies": {
     "express": "^4.18.2"
