@@ -3,7 +3,7 @@ module "core_cluster" {
 
   providers = {
     azurerm.default   = azurerm.default
-    azurerm.speedboat = azurerm.speedboat
+    azurerm.speedboat = azurerm.speedboat              // Bad - detect
   }
 
   cluster_name            = var.cluster_name
@@ -18,7 +18,7 @@ module "core_cluster" {
   
 }
 
-resource "azurerm_storage_account" "cofinity-x_public_assets" {
+resource "azurerm_storage_account" "cofinity-x_public_assets" {                          // Bad - detect
   provider = azurerm.default
   name                          = "cfxpublicassets"
   resource_group_name           = "cfx-${var.cluster_name}-rg"
@@ -29,7 +29,7 @@ resource "azurerm_storage_account" "cofinity-x_public_assets" {
   enable_https_traffic_only     = true
 
   blob_properties {
-    versioning_enabled  = true
+    versioning_enabled  = true                               // Bad - detect
     change_feed_enabled = true
     delete_retention_policy {
       days = 31
