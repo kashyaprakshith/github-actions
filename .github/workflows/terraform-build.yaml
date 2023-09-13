@@ -162,19 +162,19 @@ jobs:
         run: tflint --init
 
       - name: Run TFLint and generate SARIF
-        run: tflint --recursive -f compact 
+        run: tflint --recursive -f sarif > tflint-results.sarif 
         continue-on-error: true
 
-    #  - name: see sarif
-    #    run: cat tflint-results.sarif
+      - name: see sarif
+        run: cat tflint-results.sarif
 
-  #    - name: see files
-  #      run:  ls -al
+      - name: see files
+        run:  ls -al
 
-  #    - name: Upload TFLint SARIF output to GHAS
- #       uses: github/codeql-action/upload-sarif@v2
- #       with:
-  #        sarif_file: tflint-results.sarif
+      - name: Upload TFLint SARIF output to GHAS
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: tflint-results.sarif
 
   ## Run Terraform Format
   terraform-format:
