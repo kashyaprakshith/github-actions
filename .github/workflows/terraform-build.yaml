@@ -166,7 +166,7 @@ jobs:
         continue-on-error: true
 
       - name: see sarif
-        run: cat sarif
+        run: cat tflint-results.sarif
 
       - name: see files
         run:  ls -al
