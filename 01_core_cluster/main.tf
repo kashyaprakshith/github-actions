@@ -56,3 +56,17 @@ resource "azurerm_storage_container" "cofinity-x_public_assets_sd_factory" {
   storage_account_name  = azurerm_storage_account.cofinity-x_public_assets.name
   container_access_type = "blob"
 }
+
+output "no_description" {
+  value = "value"
+}
+
+output "empty_description" {
+  value = "value"
+  description = ""
+}
+
+output "description" {
+  value = "value"
+  description = "This is a description"
+}
