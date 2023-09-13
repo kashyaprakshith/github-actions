@@ -165,6 +165,12 @@ jobs:
         run: tflint --recursive --module --format sarif > tflint-results.sarif
         continue-on-error: true
 
+      - name: see sarif
+        run: cat sarif
+
+      - name: see files
+        run:  ls -al
+
       - name: Upload TFLint SARIF output to GHAS
         uses: github/codeql-action/upload-sarif@v2
         with:
