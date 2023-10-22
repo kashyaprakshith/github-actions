@@ -12,11 +12,14 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Extract version from package.json
+      - name: Run Jq
         uses: sergeysova/jq-action@v2
         id: version
         with:
           cmd: 'jq .version package.json -r'
       
-      - name: Show my version
-        run: 'echo "${{ steps.version.outputs.value }}"'
+      - name: Get project version
+        run: |
+          CURRENT_PROJECT_VERSION="${{ steps.version.outputs.value }}"
+          echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}" >> "$GITHUB_ENV"
+          echo "$GITHUB_EN"
