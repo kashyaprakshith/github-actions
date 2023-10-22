@@ -19,4 +19,4 @@ jobs:
           cmd: 'jq .version package.json -r'
       
       - name: Show my version
-        run: 'echo "version ${{ steps.version.outputs.value }}"'
+        run: 'echo "${{ steps.version.outputs.value }}"'
