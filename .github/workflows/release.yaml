@@ -1,0 +1,25 @@
+name: "Bump release version"
+
+on: [push]
+ 
+permissions: read-all
+
+jobs:
+  version-bump:
+    
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Jq
+        uses: sergeysova/jq-action@v2
+        id: version
+        with:
+          cmd: 'jq .version package.json -r'
+      
+      - name: Get project version
+        run: |
+          CURRENT_PROJECT_VERSION="${{ steps.version.outputs.value }}"
+          echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}" >> "$GITHUB_ENV"
+          echo "$GITHUB_EN"
