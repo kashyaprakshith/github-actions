@@ -23,3 +23,8 @@ jobs:
           CURRENT_PROJECT_VERSION="${{ steps.version.outputs.value }}"
           echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}" >> "$GITHUB_ENV"
           echo "$GITHUB_EN"
+
+      - name: Check version impact and increment accordingly
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo $COMMIT_MSG
