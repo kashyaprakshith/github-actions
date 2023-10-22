@@ -6,7 +6,7 @@ permissions: read-all
 
 jobs:
   version-bump:
-    if: ${{ github.event.pull_request.merged }}
+    
     runs-on: ubuntu-latest
     permissions:
       contents: write
