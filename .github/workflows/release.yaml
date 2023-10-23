@@ -39,3 +39,45 @@ jobs:
 
     - name: see tag
       run: git describe --tags --abbrev=0
+
+    - name: Get Tag 
+      run: |
+        CURRENT_PROJECT_VERSION=$(git describe --tags --abbrev=0)
+        echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}" >> "$GITHUB_ENV"
+
+    - name: Check version impact and increment accordingly
+      run: |
+        COMMIT_MSG=$(git log -1 --pretty=%B)
+        if ! echo "${COMMIT_MSG}" | grep -qE '\[\b[A-Z][A-Z0-9_]+-[1-9][0-9]*\]\[(major|minor|patch)\]:\s\w+' &> /dev/null ; then
+          echo "Squashed commit message does not meet the standard regex"
+          exit 1
+        fi
+        COMMIT_IMPACT_TYPE=$(echo "${COMMIT_MSG}" | grep -oE "(major|minor|patch)" | head -1)
+        case $COMMIT_IMPACT_TYPE in
+          major)
+            NEXT_PROJECT_VERSION=$(echo "${CURRENT_PROJECT_VERSION}" | awk -F. '/[0-9]+\./{$1++;$2=0;$3=0;print}' OFS=.)
+            ;;
+          minor)
+            NEXT_PROJECT_VERSION=$(echo "${CURRENT_PROJECT_VERSION}" | awk -F. '/[0-9]+\./{$2++;$3=0;print}' OFS=.)
+            ;;
+          patch)
+            NEXT_PROJECT_VERSION=$(echo "${CURRENT_PROJECT_VERSION}" | awk -F. '/[0-9]+\./{$3++;print}' OFS=.)
+            ;;
+          *)
+            echo "Invalid impact type"
+            exit 1
+            ;;
+        esac
+        echo "NEXT_PROJECT_VERSION=${NEXT_PROJECT_VERSION}" >> "$GITHUB_ENV"    
+
+    - name: Commit, tag and push
+      run: |
+        git commit -m "Bumping Version from ${CURRENT_PROJECT_VERSION} to ${NEXT_PROJECT_VERSION}"
+        git tag -a "${NEXT_PROJECT_VERSION}" -m "Release v${NEXT_PROJECT_VERSION}"
+        git push --atomic --follow-tags origin "${NEXT_PROJECT_VERSION}"    
+
+    - name: see tag
+      run: git describe --tags --abbrev=0    
+
+        
+          
