@@ -11,18 +11,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Run Jq
-        uses: sergeysova/jq-action@v2
-        id: version
-        with:
-          cmd: 'jq .version package.json -r'
-      
+      - uses: actions/checkout@v4 
       - name: Get project version
         run: |
-          npm pkg get version | tr -d '"'
+          CURRENT_PROJECT_VERSION=$(npm pkg get version | tr -d '"')
           echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}" >> "$GITHUB_ENV"
-          echo "$GITHUB_EN"
+          echo "$GITHUB_ENV"
       - name: see last commit message
         run: git log -1 --pretty=%B    
 
