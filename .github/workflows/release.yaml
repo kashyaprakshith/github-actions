@@ -1,4 +1,4 @@
-name: Check and Create Tag
+name: Check and Create Tag.
 
 on:
   push:
