@@ -18,8 +18,6 @@ jobs:
           echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}" >> "$GITHUB_ENV"
           echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}"
           
-      - name: see last commit message
-        run: git log -1 --pretty=%B    
 
       - name: Check version impact and increment accordingly
         run: |
