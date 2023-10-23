@@ -31,7 +31,7 @@ jobs:
         if [ $tag_count -eq 0 ]; then
             # If no tags exist, create a new tag with version 1.0.0
             git tag -a 0.0.0 -m "Initial version 1.0.0"
-            echo "Created a new tag: 1.0.0"
+            echo "Created a new tag: 0.0.0"
             git push origin 0.0.0
         else
             echo "Tags already exist. No action needed."
