@@ -26,6 +26,12 @@ jobs:
       - name: see last commit message..
         run: git log -1 --pretty=%B    
 
+      - name: set global variables
+        run: |
+          git add pom.xml
+          git config --global user.name "ACN-rakshith"
+          git config --global user.email "rakshith.kashyap@accenture.com"
+
       - name: Check version impact and increment accordingly
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
