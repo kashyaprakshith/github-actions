@@ -20,7 +20,7 @@ jobs:
       
       - name: Get project version
         run: |
-          CURRENT_PROJECT_VERSION="${{ steps.version.outputs.value }}"
+          npm pkg get version | tr -d '"'
           echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}" >> "$GITHUB_ENV"
           echo "$GITHUB_EN"
       - name: see last commit message
