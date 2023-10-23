@@ -21,11 +21,6 @@ jobs:
       - name: see last commit message
         run: git log -1 --pretty=%B    
 
-      - name: set global variables
-        run: |
-          git config --global user.name "ACN-rakshith"
-          git config --global user.email "rakshith.kashyap@accenture.com"
-
       - name: Check version impact and increment accordingly
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
@@ -59,6 +54,8 @@ jobs:
       - name: Commit, tag and push
         run: |
           git add --update
+          git config --global user.name "ACN-rakshith"
+          git config --global user.email "rakshith.kashyap@accenture.com"
           git commit -m "Bumping Version from ${CURRENT_PROJECT_VERSION} to ${NEXT_PROJECT_VERSION}"
           git tag -a "${NEXT_PROJECT_VERSION}" -m "Release v${NEXT_PROJECT_VERSION}"
           git push --atomic --follow-tags origin init-javascript "${NEXT_PROJECT_VERSION}"   
