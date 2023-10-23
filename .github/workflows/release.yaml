@@ -18,6 +18,10 @@ jobs:
         git config --global user.email "you@example.com"
         git config --global user.name "Your Name"
 
+    - name: see git tag
+      run: |
+        git tag | wc -l
+
     - name: Check and Create Tag
       run: |
         # Get the number of tags in the repository
