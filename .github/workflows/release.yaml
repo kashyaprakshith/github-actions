@@ -41,17 +41,17 @@ jobs:
           COMMIT_IMPACT_TYPE=$(echo "${COMMIT_MSG}" | grep -oE "(major|minor|patch)" | head -1)
           case $COMMIT_IMPACT_TYPE in
             major)
-              npm version major
+              npm --no-git-tag-version version --allow-same-version major
               echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}" >> "$GITHUB_ENV"
               echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}"
               ;;
             minor)
-              npm version minor
+              npm --no-git-tag-version version --allow-same-version minor
               echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}" >> "$GITHUB_ENV"
               echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}"
               ;;
             patch)
-              npm version patch
+              npm --no-git-tag-version version --allow-same-version patch
               echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}" >> "$GITHUB_ENV"
               echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}"
               ;;
