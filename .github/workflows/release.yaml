@@ -16,7 +16,7 @@ jobs:
         run: |
           CURRENT_PROJECT_VERSION=$(npm pkg get version | tr -d '"')
           echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}" >> "$GITHUB_ENV"
-          echo "$GITHUB_ENV"
+          echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}"
       - name: see last commit message
         run: git log -1 --pretty=%B    
 
