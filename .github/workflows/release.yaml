@@ -28,7 +28,6 @@ jobs:
 
       - name: set global variables
         run: |
-          git add pom.xml
           git config --global user.name "ACN-rakshith"
           git config --global user.email "rakshith.kashyap@accenture.com"
 
