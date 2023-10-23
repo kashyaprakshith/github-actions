@@ -21,7 +21,7 @@ jobs:
       - name: see last commit message
         run: git log -1 --pretty=%B    
 
-      - name: set global variables.
+      - name: set global variables
         run: |
           git config --global user.name "ACN-rakshith"
           git config --global user.email "rakshith.kashyap@accenture.com"
