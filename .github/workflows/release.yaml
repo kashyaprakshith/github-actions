@@ -17,6 +17,7 @@ jobs:
           CURRENT_PROJECT_VERSION=$(npm pkg get version | tr -d '"')
           echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}" >> "$GITHUB_ENV"
           echo "CURRENT_PROJECT_VERSION=${CURRENT_PROJECT_VERSION}"
+          
       - name: see last commit message
         run: git log -1 --pretty=%B    
 
@@ -35,25 +36,26 @@ jobs:
           COMMIT_IMPACT_TYPE=$(echo "${COMMIT_MSG}" | grep -oE "(major|minor|patch)" | head -1)
           case $COMMIT_IMPACT_TYPE in
             major)
-              npm --no-git-tag-version version --allow-same-version major
-              echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}" >> "$GITHUB_ENV"
-              echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}"
+              NEXT_PROJECT_VERSION=$(echo "${CURRENT_PROJECT_VERSION}" | awk -F. '/[0-9]+\./{$1++;$2=0;$3=0;print}' OFS=.)
+              echo "NEXT_PROJECT_VERSION=${NEXT_PROJECT_VERSION}" >> "$GITHUB_ENV"
               ;;
             minor)
-              npm --no-git-tag-version version --allow-same-version minor
-              echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}" >> "$GITHUB_ENV"
-              echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}"
+              NEXT_PROJECT_VERSION=$(echo "${CURRENT_PROJECT_VERSION}" | awk -F. '/[0-9]+\./{$2++;$3=0;print}' OFS=.)
+              echo "NEXT_PROJECT_VERSION=${NEXT_PROJECT_VERSION}" >> "$GITHUB_ENV"
               ;;
             patch)
-              npm --no-git-tag-version version --allow-same-version patch
-              echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}" >> "$GITHUB_ENV"
-              echo "NEXT_PROJECT_VERSION=${{ steps.version.outputs.value }}"
+              NEXT_PROJECT_VERSION=$(echo "${CURRENT_PROJECT_VERSION}" | awk -F. '/[0-9]+\./{$3++;print}' OFS=.)
+              echo "NEXT_PROJECT_VERSION=${NEXT_PROJECT_VERSION}" >> "$GITHUB_ENV"
               ;;
             *)
               echo "Invalid impact type"
               exit 1;;
           esac
-      
+      - name: Set project version
+        run: |
+          npm version --no-git-tag-version "$NEXT_PROJECT_VERSION"
+          echo "NEXT_PROJECT_VERSION=$NEXT_PROJECT_VERSION"
+          
       - name: Commit, tag and push
         run: |
           git add package.json package-lock.json
