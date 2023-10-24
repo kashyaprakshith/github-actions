@@ -13,7 +13,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: set global user variables
+    - name: set global user variables....
       run: |
         git config --global user.email "you@example.com"
         git config --global user.name "Your Name"
