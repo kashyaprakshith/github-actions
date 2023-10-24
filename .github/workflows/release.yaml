@@ -73,6 +73,7 @@ jobs:
     - name: Commit, tag and push
       run: |
         git tag -a "${NEXT_PROJECT_VERSION}" -m "Release ${NEXT_PROJECT_VERSION}"
+         "Bumping Version from ${CURRENT_PROJECT_VERSION} to ${NEXT_PROJECT_VERSION}"
         git push --atomic --follow-tags origin "${NEXT_PROJECT_VERSION}"    
 
     - name: see tag
