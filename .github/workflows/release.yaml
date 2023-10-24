@@ -13,15 +13,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: set global user variables....
-      run: |
-        git config --global user.email "you@example.com"
-        git config --global user.name "Your Name"
-
-    - name: see git tag
-      run: |
-        git tag | wc -l
-
     - name: see tag
       run: git describe --tags --abbrev=0
 
@@ -58,6 +49,8 @@ jobs:
 
     - name: Commit, tag and push
       run: |
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
         git tag -a "${NEXT_PROJECT_VERSION}" -m "Release ${NEXT_PROJECT_VERSION}"
         "Bumping Version from ${CURRENT_PROJECT_VERSION} to ${NEXT_PROJECT_VERSION}"
         git push --atomic --follow-tags origin "${NEXT_PROJECT_VERSION}"    
