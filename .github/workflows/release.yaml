@@ -54,7 +54,7 @@ jobs:
         git config --global user.email "you@example.com"
         git config --global user.name "Your Name"
         git tag -a "${NEXT_PROJECT_VERSION}" -m "Release ${NEXT_PROJECT_VERSION}"
-        "Bumping Version from ${CURRENT_PROJECT_VERSION} to ${NEXT_PROJECT_VERSION}"
+        echo "Bumping Version from ${CURRENT_PROJECT_VERSION} to ${NEXT_PROJECT_VERSION}"
         git push --atomic --follow-tags origin "${NEXT_PROJECT_VERSION}"    
 
     - name: see tag
